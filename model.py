@@ -5,7 +5,7 @@ from blocks.bricks.cost import CategoricalCrossEntropy
 
 from blocks.initialization import IsotropicGaussian, Constant, Orthogonal
 
-from cuboid.bricks import BrickSequence, Dropout
+from cuboid.bricks import BrickSequence, Dropout, LeakyRectifier
 
 from blocks.filter import VariableFilter
 from blocks.graph import ComputationGraph
@@ -19,19 +19,19 @@ class ModelHelper(object):
             Linear(output_dim = 128,
                 weights_init=IsotropicGaussian(0.01),
                 biases_init = Constant(0))
-            , Rectifier()
+            , LeakyRectifier(a=0.3)
 
             , Dropout(p_drop=0.2)
             , Linear(output_dim = 256,
                 weights_init=IsotropicGaussian(0.01),
                 biases_init = Constant(0))
-            , Rectifier()
+            , LeakyRectifier(a=0.3)
 
-            , Dropout(p_drop=0.4)
+            , Dropout(p_drop=0.2)
             , Linear(output_dim = 256,
                 weights_init=IsotropicGaussian(0.01),
                 biases_init = Constant(0))
-            , Rectifier()
+            , LeakyRectifier(a=0.3)
 
             , Linear(output_dim = 9,
                 weights_init=IsotropicGaussian(0.01),
