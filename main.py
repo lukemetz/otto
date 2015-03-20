@@ -12,7 +12,10 @@ from blocks.extensions.saveload import Dump, Checkpoint
 
 from cuboid.algorithms import NAG
 
+from cuboid.evaluators import DatasetMapEvaluator
 from model import ModelHelper
+import pandas as pd
+import numpy as np
 
 m = ModelHelper()
 
@@ -25,6 +28,7 @@ algorithm = GradientDescent(
     step_rule=NAG(lr=0.01, momentum=0.9))
 
 h = DatasetHelper()
+
 stream = h.get_train_stream()
 
 main_loop = MainLoop(
@@ -42,6 +46,17 @@ main_loop = MainLoop(
                 prefix="test")
             , Plot('otto',
                 channels=[['test_cost', 'train_cost'], ['test_inference_cost']])
+            #, FinishAfter(after_n_epochs=90)
             , Printing()])
 
 main_loop.run()
+print "Writing"
+
+evaluator = DatasetMapEvaluator(m.inference_probs)
+result = evaluator.evaluate(h.get_leaderboard_stream())
+ids = np.reshape(range(1, result.shape[0]+1), (-1, 1))
+#result = np.hstack((ids, result))
+classes = ["Class_%s"%i for i in range(1, 10)]
+frame = pd.DataFrame(result, columns=classes)
+frame['id'] = ids
+frame.to_csv("out.csv", index=False, columns=['id'] + classes)

@@ -46,8 +46,8 @@ class ModelHelper(object):
         self.cost.name = "cost"
 
         o = seq.apply_inference(x)
-        probs= Softmax().apply(o)
-        self.inference_cost = CategoricalCrossEntropy().apply(y, probs)
+        self.inference_probs= Softmax().apply(o)
+        self.inference_cost = CategoricalCrossEntropy().apply(y, self.inference_probs)
         self.inference_cost.name  = "inference_cost"
 
         cg = ComputationGraph([self.cost])
